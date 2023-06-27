@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include arsh_customization *.css
+recursive-include arsh_customization *.csv
+recursive-include arsh_customization *.html
+recursive-include arsh_customization *.ico
+recursive-include arsh_customization *.js
+recursive-include arsh_customization *.json
+recursive-include arsh_customization *.md
+recursive-include arsh_customization *.png
+recursive-include arsh_customization *.py
+recursive-include arsh_customization *.svg
+recursive-include arsh_customization *.txt
+recursive-exclude arsh_customization *.pyc
