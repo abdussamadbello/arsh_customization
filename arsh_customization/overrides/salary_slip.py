@@ -1,5 +1,5 @@
 
-from erpnext.payroll.doctype.salary_slip.salary_slip import SalarySlip
+from hrms.payroll.doctype.salary_slip.salary_slip import SalarySlip
 import frappe
 
 
