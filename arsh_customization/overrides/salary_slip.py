@@ -23,7 +23,8 @@ class TotalExemptionAmount(SalarySlip):
 				)
 				if declaration:
 					total_exemption_amount = declaration
-				total_exemption_amount += max(0.21 * self.gross_pay, 16666.7+0.02*self.gross_pay)
+				total_exemption_amount += max(0.21 * self.gross_pay, 16666.7+0.2*self.gross_pay)
+				frappe.msgprint("Total Exemption Amount: {}".format(total_exemption_amount))
 		return total_exemption_amount
 	
 
