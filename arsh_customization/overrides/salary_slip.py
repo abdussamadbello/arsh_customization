@@ -6,6 +6,8 @@ import frappe
 class TotalExemptionAmount(SalarySlip):
 	def get_total_exemption_amount(self):
 		total_exemption_amount = 0
+		taxable_income =0
+
 		if self.tax_slab.allow_tax_exemption:
 			if self.deduct_tax_for_unsubmitted_tax_exemption_proof:
 				exemption_proof = frappe.db.get_value(
@@ -23,7 +25,10 @@ class TotalExemptionAmount(SalarySlip):
 				)
 				if declaration:
 					total_exemption_amount = declaration
-			total_exemption_amount += max(0.21 * self.gross_pay, 16666.7+0.2*self.gross_pay)
+			for earning in self.earnings:
+				if earning.is_tax_applicable:
+					taxable_income += earning.amount
+			total_exemption_amount += max(0.21 * taxable_income, 16666.67+0.2*taxable_income)
 		return total_exemption_amount
 	
 
