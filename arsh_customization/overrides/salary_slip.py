@@ -9,17 +9,17 @@ class TotalExemptionAmount(SalarySlip):
              self.get_field_days()
              
     
-    def get_total_exemption_amount(self, payroll_period, tax_slab):
+    def get_total_exemption_amount(self):
         total_exemption_amount = 0
         taxable_income = 0
 
-        if tax_slab.allow_tax_exemption:
+        if self.tax_slab.allow_tax_exemption:
             if self.deduct_tax_for_unsubmitted_tax_exemption_proof:
                 exemption_proof = frappe.db.get_value(
                     "Employee Tax Exemption Proof Submission",
                     {
                         "employee": self.employee,
-                        "payroll_period": payroll_period.name,
+                        "payroll_period": self.payroll_period.name,
                         "docstatus": 1,
                     },
                     ["exemption_amount"],
@@ -31,7 +31,7 @@ class TotalExemptionAmount(SalarySlip):
                     "Employee Tax Exemption Declaration",
                     {
                         "employee": self.employee,
-                        "payroll_period": payroll_period.name,
+                        "payroll_period": self.payroll_period.name,
                         "docstatus": 1,
                     },
                     ["total_exemption_amount"],
