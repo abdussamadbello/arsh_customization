@@ -95,7 +95,8 @@ app_license = "MIT"
 
 override_doctype_class = {
 	# "ToDo": "custom_app.overrides.CustomToDo"
-    "Salary Slip": "arsh_customization.overrides.salary_slip.TotalExemptionAmount"
+    "Salary Slip": "arsh_customization.overrides.salary_slip.TotalExemptionAmount",
+    "Attendance Request": "arsh_customization.overrides.attendance.ArioshAttendanceRequest"
 }
 
 # Document Events
