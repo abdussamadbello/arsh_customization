@@ -1,0 +1,6 @@
+*env
+*sites
+*config
+*logs
+*web_template
+*.devcontainer

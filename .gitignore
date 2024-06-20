@@ -5,3 +5,8 @@
 tags
 node_modules
 *dist
+.devcontainer
+web_template
+*patches.txt
+*Procfile
+*launch.json
