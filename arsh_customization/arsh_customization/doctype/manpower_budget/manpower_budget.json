@@ -1,0 +1,206 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "naming_series:",
+ "creation": "2024-04-05 12:40:31.618964",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "naming_series",
+  "cost_center",
+  "project",
+  "is_supplement",
+  "primary_budget",
+  "column_break_3",
+  "monthly_distribution",
+  "amended_from",
+  "cost_manager",
+  "project_manager",
+  "section_break_6",
+  "applicable_on_booking_actual_hours",
+  "action_if_total_manhour_exceeded",
+  "manhour_burndown_alert",
+  "trigger_alert_percentage",
+  "section_break_21",
+  "tasks"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Series",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_standard_filter": 1,
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "monthly_distribution",
+   "fieldtype": "Link",
+   "label": "Monthly Distribution",
+   "options": "Monthly Distribution"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Manpower Budget",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "cost_center.manager",
+   "fieldname": "cost_manager",
+   "fieldtype": "Link",
+   "label": "Cost Manager",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "project.manager",
+   "fieldname": "project_manager",
+   "fieldtype": "Link",
+   "label": "Project Manager",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break",
+   "label": "Control Action"
+  },
+  {
+   "default": "0",
+   "fieldname": "applicable_on_booking_actual_hours",
+   "fieldtype": "Check",
+   "label": "Applicable on booking actual hours"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Stop",
+   "depends_on": "eval:doc.applicable_on_booking_actual_hours == 1",
+   "fieldname": "action_if_total_manhour_exceeded",
+   "fieldtype": "Select",
+   "label": "Action if Total Manhour Budget Exceeded",
+   "options": "\nStop\nWarn\nIgnore"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Warn",
+   "depends_on": "eval:doc.applicable_on_booking_actual_hours == 1",
+   "fieldname": "manhour_burndown_alert",
+   "fieldtype": "Check",
+   "label": "Manhour Burndown Alert"
+  },
+  {
+   "default": "70",
+   "depends_on": "eval:doc.manhour_burndown_alert  == 1;",
+   "fieldname": "trigger_alert_percentage",
+   "fieldtype": "Percent",
+   "label": "Trigger Alert Percentage",
+   "mandatory_depends_on": "eval:doc.manhour_burndown_alert  == 1;"
+  },
+  {
+   "bold": 1,
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break",
+   "label": "Task Budget"
+  },
+  {
+   "fieldname": "tasks",
+   "fieldtype": "Table",
+   "label": "Task List",
+   "options": "Task Budget",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Manpower Budget",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_supplement",
+   "fieldtype": "Check",
+   "label": "Is Supplement"
+  },
+  {
+   "depends_on": "eval:doc.is_supplement==1;",
+   "fieldname": "primary_budget",
+   "fieldtype": "Link",
+   "label": "Primary Budget",
+   "mandatory_depends_on": "eval:doc.is_supplement==1;",
+   "options": "Manpower Budget"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-05-09 22:18:27.823385",
+ "modified_by": "Administrator",
+ "module": "Arsh Customization",
+ "name": "Manpower Budget",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
