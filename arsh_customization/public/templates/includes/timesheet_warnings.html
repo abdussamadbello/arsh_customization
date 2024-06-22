@@ -1,24 +1,27 @@
-<div class="form-message yellow">
-	<div>{{__("Timesheet for the following dates will be skipped/overwritten on submission")}}</div>
-	<div>{{ warnings[0].warning }};</div>
+<div class="form-message red">
+	<div>{{__("Timesheet for the following tasks/designations will be submitted for billing on approval")}}</div>
 </div>
 <table class="table table-bordered table-hover">
 	<thead>
 		<tr>
-			<th style="width: 20%">{{ __("Date") }}</th>
-			<th style="width: 20%">{{ __("Action on Submission") }}</th>
-			<th style="width: 20%">{{ __("Reason") }}</th>
-			<th style="width: 20%">{{ __("Existing Record") }}</th>
+			<th style="width: 15%">{{ __("Designation") }}</th>
+			<th style="width: 15%">{{ __("Task") }}</th>
+			<th style="width: 10%">{{ __("Task % Complete") }}</th>
+			<th style="width: 10%">{{ __("Actual Spend %") }}</th>
+			<th style="width: 10%">{{ __("Performance Index %") }}</th>
+			<th style="width: 40%">{{ __("Warning") }}</th>
 		</tr>
 	</thead>
 
 	<tbody>
 	{% for(var i=0; i < warnings.length; i++) { %}
 		<tr>
-			<td class="small">{{ frappe.datetime.str_to_user(warnings[i].date) }}</td>
-			<td class="small"> {{ __(warnings[i].action) }} </td>
-			<td class="small"> {{ __(warnings[i].reason) }} </td>
-			<td class="small"> {{ warnings[i].record }} </td>
+			<td class="small">{{ (warnings[i].designation) }}</td>
+			<td class="small"> {{ (warnings[i].task) }} </td>
+			<td class="small"> {{ (warnings[i].earned) }} </td>
+			<td class="small"> {{ (warnings[i].spend) }} </td>
+			<td class="small"> {{ (warnings[i].performance) }} </td>
+			<td class="small"> {{ (warnings[i].warning) }} </td>
 		</tr>
 	{% } %}
 	</tbody>
