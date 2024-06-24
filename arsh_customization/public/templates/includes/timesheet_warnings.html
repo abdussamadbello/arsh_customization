@@ -21,7 +21,11 @@
 			<td class="small"> {{ (warnings[i].earned) }} </td>
 			<td class="small"> {{ (warnings[i].spend) }} </td>
 			<td class="small"> {{ (warnings[i].performance) }} </td>
-			<td class="small"> {{ (warnings[i].warning) }} </td>
+			{% if warnings[i].color_code %}
+				<td class="small" style="background-color: {{warnings[i].color_code}}">{{ (warnings[i].warning) }} </td>
+		  	{% else %}
+				<td class="small"> {{ (warnings[i].warning) }} </td>
+		  	{% endif %}
 		</tr>
 	{% } %}
 	</tbody>
