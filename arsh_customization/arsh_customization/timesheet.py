@@ -49,16 +49,21 @@ class ArioshTimesheet(Timesheet):
         timesheet_warnings = []   
         for log in self.time_logs:
             args = log.as_dict()
-            args.update({"company": self.company, "employee": self.employee})
+            progress = frappe.get_value("Task", args.task, "progress")
+            args.update({"company": self.company, "employee": self.employee, "progress": progress})
             budget_record, project_budget = get_budget_record(args)
             budget_hours = get_budget_hours(budget_record)
             actual_hours = get_actual_hours(args)
             total_hours = actual_hours + flt(args.hours)
             warning_threshold = flt(project_budget["trigger_alert_percentage"])
-            msg = compare_partial_budget(args, budget_hours, actual_hours, total_hours, warning_threshold)
+            spend = total_hours * 100 / budget_hours
+            performance = progress * 100 /spend
+            msg, color_code = compare_partial_budget(args, budget_hours, actual_hours, total_hours, warning_threshold)
             if msg:
                 timesheet_warnings.append(
-                    {"task": args.task, "designation": args.designation, "completion": args.complete, "warning": msg})
+                    {"task": args.task, "designation": args.designation, "earned": args.progress,"spend":f'{spend:.2f}', 
+                     "performance": f'{performance:.2f}', "warning": msg, "budget": budget_hours, 
+                     "hours_before_approval": actual_hours, "hour_after_approval": total_hours, "color_code" : color_code})
         return timesheet_warnings
 
 def validate_designation(employee, designation, project):
@@ -79,27 +84,30 @@ def validate_task(project, task):
             title=_("Task Error"))
 
 def compare_partial_budget(args, budget_hours, actual_hours, total_hours, warning_threshold):
-    threshold_hours = warning_threshold * budget_hours
-    progress = frappe.get_value("Task", args.task, "progress")
-    earned_hours = budget_hours * progress / 100
+    threshold_hours = warning_threshold * budget_hours / 100
+    earned_hours = budget_hours * args.progress / 100
     msg = None
+    color_code = None
     if total_hours > threshold_hours:
         if actual_hours > threshold_hours:
-            error_tense = _("is already")
+            tense = "is already"
             diff = actual_hours - threshold_hours
         else:
-            error_tense = _("will be")
+            tense = "will be"
             diff = total_hours - threshold_hours
 
-        msg = _("{0}'s {1}% warning threshold budget for Task {2} is {3}. It {4} exceed by {5}").format(
-            frappe.bold(args.designation), warning_threshold, frappe.bold(args.task),
-            frappe.bold(threshold_hours), error_tense, frappe.bold(diff))
+        msg = _("Budget warning threshold is {0} and {1} exceeded by {2}. <br> \
+                Actual hours will be {3} , budget hours is {4} and remaining budget is {5}").format(
+            frappe.bold(threshold_hours), tense, frappe.bold(diff), frappe.bold(total_hours),
+            frappe.bold(budget_hours), frappe.bold(budget_hours - total_hours))
+        color_code = "lightpink"
+
     elif total_hours > earned_hours:
         diff = total_hours - earned_hours
-        msg = _("{0} actual hours for Task {1} will be {2}. It will exceed earned hours of {3} by {4}").format(
-            frappe.bold(args.designation), frappe.bold(args.task),
-            frappe.bold(total_hours), frappe.bold(earned_hours), frappe.bold(diff))       
-    return msg
+        msg = _("Actual hours will be {0} and it will exceed earned hours({1}) by {2}").format(
+            frappe.bold(total_hours), frappe.bold(earned_hours), frappe.bold(diff))   
+        color_code = "khaki"    
+    return (msg, color_code)
 
 @frappe.whitelist()   
 def get_permitted_designation(employee, project):
