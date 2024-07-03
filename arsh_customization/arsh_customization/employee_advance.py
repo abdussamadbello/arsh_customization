@@ -44,7 +44,7 @@ class ArioshPaymentEntry(PaymentEntry):
 		elif self.party_type == "Shareholder":
 			return ("Journal Entry",)
 		elif self.party_type == "Employee":
-				return ("Journal Entry", "Employee Advance")
+				return ("Journal Entry", "Employee Advance", "Expense Claim")
 
 @frappe.whitelist()
 def get_pending_amount(employee, posting_date, exchange_rate):
