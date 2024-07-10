@@ -1,0 +1,30 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-07-08 18:40:19.928840",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Standard",
+ "letterhead": null,
+ "modified": "2024-07-08 18:41:51.769830",
+ "modified_by": "Administrator",
+ "module": "Arsh Customization",
+ "name": "Manpower Budget Variance Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Project",
+ "report_name": "Manpower Budget Variance Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Projects Manager"
+  },
+  {
+   "role": "Cost Center Manager"
+  }
+ ]
+}
