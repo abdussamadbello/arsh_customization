@@ -72,49 +72,31 @@ def execute(filters=None):
 
 
 def get_chart_data(filters, columns, data):
-	pass
-	# if not data:
-	# 	return None
 
-	# labels = []
-	# for year in fiscal_year:
-	# 	for from_date, to_date in get_period_date_ranges(filters["period"], year[0]):
-	# 		if filters["period"] == "Yearly":
-	# 			labels.append(year[0])
-	# 		else:
-	# 			if group_months:
-	# 				label = (
-	# 					formatdate(from_date, format_string="MMM")
-	# 					+ "-"
-	# 					+ formatdate(to_date, format_string="MMM")
-	# 				)
-	# 				labels.append(label)
-	# 			else:
-	# 				label = formatdate(from_date, format_string="MMM")
-	# 				labels.append(label)
+	if not data:
+		return None
 
-	# no_of_columns = len(labels)
+	labels = filters.get("project")
 
-	# budget_values, actual_values = [0] * no_of_columns, [0] * no_of_columns
-	# for d in data:
-	# 	values = d[2:]
-	# 	index = 0
+	no_of_columns = len(labels)
 
-	# 	for i in range(no_of_columns):
-	# 		budget_values[i] += values[index]
-	# 		actual_values[i] += values[index + 1]
-	# 		index += 3
-
-	# return {
-	# 	"data": {
-	# 		"labels": labels,
-	# 		"datasets": [
-	# 			{"name": _("Budget"), "chartType": "bar", "values": budget_values},
-	# 			{"name": _("Actual Expense"), "chartType": "bar", "values": actual_values},
-	# 		],
-	# 	},
-	# 	"type": "bar",
-	# }
+	budget_values, actual_values = [0] * no_of_columns, [0] * no_of_columns
+	for d in data:
+		for i in range(no_of_columns):
+			if d[0] == labels[i]:
+				budget_values[i] += d[3]
+				actual_values[i] += d[4]
+				
+	return {
+		"data": {
+			"labels": labels,
+			"datasets": [
+				{"name": _("Budget"), "chartType": "bar", "values": budget_values},
+				{"name": _("Actual"), "chartType": "bar", "values": actual_values},
+			],
+		},
+		"type": "bar",
+	}
 
 def get_budget_record(args:list) -> list:
 	budget_record = frappe.db.get_all("Task Budget",
