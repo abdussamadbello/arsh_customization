@@ -4,8 +4,8 @@
 import datetime
 
 import frappe
-from frappe import _, _dict
-from frappe.utils import flt, formatdate
+from frappe import _
+from frappe.utils import flt, cint
 
 from erpnext.controllers.trends import get_period_date_ranges, get_period_month_ranges
 
@@ -13,8 +13,10 @@ from erpnext.controllers.trends import get_period_date_ranges, get_period_month_
 def execute(filters=None):
 	if not filters:
 		filters = {}
+	else:
+		projects = filters.get("project") or []
+		group_by = filters.get("group_by")
 
-	# projects = ["PROJ-0007", "PROJ-0008","PROJ-0009"]
 	columns = [
 		{
 			"label": _("Project"),
@@ -28,14 +30,14 @@ def execute(filters=None):
 			"fieldname": "task",
 			"fieldtype": "Link",
 			"options": "Task",
-			"width": 300,
+			"width": 200,
 		},
 		{
 			"label": _("Designation"),
 			"fieldname": "desination",
 			"fieldtype": "Link",
 			"options": "Designation",
-			"width": 150,
+			"width": 300,
 		},
 		{
 			"label": _("Budget"),
@@ -56,9 +58,6 @@ def execute(filters=None):
 			"width": 150,
 		},
 	]
-	projects = []
-	if filters.get("project"):
-		projects = filters.get("project")
 	
 	data = []
 	if projects:
@@ -68,8 +67,11 @@ def execute(filters=None):
 
 	chart = get_chart_data(filters, columns, data)
 
-	return columns, data, None, chart
+	if group_by:
+		grouped_data = group_data(data, cint(group_by))
+		return columns, grouped_data, None, chart
 
+	return columns, data, None, chart
 
 def get_chart_data(filters, columns, data):
 
@@ -134,6 +136,33 @@ def get_actual_hours(budget_record):
 		budget_variance[index] += [actual_hours, item[3] - actual_hours]
 
 	return budget_variance
-			
 
-	
+def group_data(data, group_by):
+  if group_by not in (0, 1, 2):
+    return
+
+  # Sort data by the chosen field
+  data.sort(key=lambda row: row[group_by])
+
+  # Track current group and total
+  current_group = None
+  group_total = [0, 0, 0]
+  result = []
+
+  for row in data:
+    # Check for group change and add total if needed
+    if row[group_by] != current_group:
+      if current_group is not None:
+        result.append([None, None, f"Subtotal - {current_group}"] + group_total)
+      current_group = row[group_by]
+      group_total = [0, 0, 0]
+
+    # Add current row, update total, and calculate each subtotal of the last 3 fields
+    result.append(row)
+    group_total = [a + b for a, b in zip (group_total, row[-3:])]
+
+  # Add final group total if needed
+  if current_group is not None:
+    result.append([None, None, f"Subtotal - {current_group}"] + group_total)
+
+  return result

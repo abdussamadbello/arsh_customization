@@ -7,10 +7,10 @@ frappe.query_reports["Manpower Budget Variance Report"] = {
 		value = default_formatter(value, row, column, data);
 
 		if (column.fieldname.includes(__("variance"))) {
-			if (data[column.fieldname] < 0) {
-				value = "<span style='color:red'>" + value + "</span>";
+			if (data[column.fieldname] <= 0) {
+				value = "<span style='color:red; background-color:pink;'>" + value + "</span>";
 			} else if (data[column.fieldname] > 0) {
-				value = "<span style='color:green'>" + value + "</span>";
+				value = "<span style='color:green; background-color:greenyellow;'>" + value + "</span>";
 			}
 		}
 
@@ -35,6 +35,26 @@ function get_filters() {
 			get_data: function (txt) {
 				return frappe.db.get_link_options("Project", txt,filters={"status":"Open"})
 			},
+		},
+		{
+			fieldname: "group_by",
+			label: __("Group by"),
+			fieldtype: "Select",
+			options: [
+				"",
+				{
+					label: __("Group by Project"),
+					value: 0,
+				},
+				{
+					label: __("Group by Task"),
+					value: 1,
+				},
+				{
+					label: __("Group by Designation"),
+					value: 2,
+				},
+			],
 		},
 	];
 
