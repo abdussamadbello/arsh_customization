@@ -4,7 +4,6 @@ from datetime import datetime
 from frappe.utils.background_jobs import enqueue
 from frappe.workflow.doctype.workflow_action.workflow_action import (
      get_link_to_form, get_workflow_name,)
-from frappe.model.workflow import get_workflow_name
 from frappe.utils.user import get_users_with_role
 
 def get_overdue_doc(doc_type):
@@ -37,7 +36,6 @@ def get_supervisor(action_party) -> str:
         supervisor.append(frappe.db.get_value("Employee",supervisor_id, "user_id"))
     return supervisor
 
-
 def send_email(doc, email_data:dict):
     common_args = get_common_email_args(doc)
     message = common_args.pop("message", None)
@@ -62,7 +60,6 @@ def send_email(doc, email_data:dict):
 def get_common_email_args(doc):
 	doctype = doc.get("doctype")
 	docname = doc.get("name")
-
 	email_template = get_email_template(doc)
 	if email_template:
 		subject = frappe.render_template(email_template.subject, vars(doc))
@@ -70,14 +67,12 @@ def get_common_email_args(doc):
 	else:
 		subject = _("Workflow Action") + f" on {doctype}: {docname}"
 		response = get_link_to_form(doctype, docname, f"{doctype}: {docname}")
-
 	print_format = doc.meta.default_print_format
 	lang = doc.get("language") or (
 		frappe.get_cached_value("Print Format", print_format, "default_print_language")
 		if print_format
 		else None
 	)
-
 	return {
 		"template": "workflow_action",
 		"header": "Workflow Action",
@@ -95,7 +90,6 @@ def get_common_email_args(doc):
 		"message": response,
 	}
 
-
 def get_email_template(doc):
 	"""Returns next_action_email_template
 	for workflow state (if available) based on doc current workflow state
@@ -107,11 +101,9 @@ def get_email_template(doc):
 		{"parent": workflow_name, "state": doc_state},
 		"next_action_email_template",
 	)
-
 	if not template_name:
 		return
 	return frappe.get_doc("Email Template", template_name)
-
 
 if __name__ == "__main__":
     doc_list = frappe.db.get_list("Workflow",
@@ -130,7 +122,6 @@ if __name__ == "__main__":
                 action_party = get_action_party(doc)
                 email_data = {"action_party": action_party, "message": None, "action": "reminder"}
                 enqueue(send_email, queue="short", doc=doc, email_data=email_data)
-
             else:
                 message = f"""This is a reminder that  {frappe.bold(doc.doctype)} - '{doc.name}' is awaiting {action_party}'s action since {doc.modified.strftime('%Y-%m-%d %H:%M:%S')}.
                 Please take necessary action to progress the document."""
