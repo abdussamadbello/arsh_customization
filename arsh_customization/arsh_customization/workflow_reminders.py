@@ -3,7 +3,7 @@ from frappe import _
 from datetime import datetime
 from frappe.utils.background_jobs import enqueue
 from frappe.workflow.doctype.workflow_action.workflow_action import (
-     get_link_to_form, get_workflow_name,)
+     get_link_to_form, get_workflow_name, get_workflow_action_url,)
 from frappe.utils.user import get_users_with_role
 
 def get_overdue_doc(doc_type):
@@ -37,15 +37,22 @@ def get_supervisor(action_party) -> str:
     return supervisor
 
 def send_email(doc, email_data:dict):
+    user = email_data.get("action_party")
+    possible_actions =[
+		{"action_name": "Approve",	"action_link": get_workflow_action_url("Approve", doc, user),},
+		{"action_name": "Reject",	"action_link": get_workflow_action_url("Reject", doc, user),}
+	]
     common_args = get_common_email_args(doc)
     message = common_args.pop("message", None)
     if email_data.get("action") == "escalation":
          message = email_data.get("message")
     email_args = {
-        "recipients": email_data.get("action_party"),
-        "args": {"actions": [{"action_name": "Approve", "action_link": "Approve_Link"},
-                             {"action_name": "Reject", "action_link": "Reject_Link"}],
-                "message": message},
+        "recipients": user,
+        "args": {"actions":[
+		            {"action_name": "Approve",	"action_link": get_workflow_action_url("Approve", doc, user),},
+		            {"action_name": "Reject",	"action_link": get_workflow_action_url("Reject", doc, user),}],
+                "message": message,
+                },
         "reference_name": doc.name,
         "reference_doctype": doc.doctype,
     }
@@ -115,10 +122,10 @@ if __name__ == "__main__":
             continue
         for item in overdue_list:
             time_elapsed = datetime.now() - item.modified
-            if time_elapsed.total_seconds()/3600 < 10 or time_elapsed.days > 7:
+            if time_elapsed.total_seconds() < 36_000 or time_elapsed.days > 10:
                 continue
             doc = frappe.get_doc(doc_type, item.name)
-            if time_elapsed.days < 2 and time_elapsed.seconds > 36_000:
+            if time_elapsed.total_seconds >= 36_000 and time_elapsed.days < 2:
                 action_party = get_action_party(doc)
                 email_data = {"action_party": action_party, "message": None, "action": "reminder"}
                 enqueue(send_email, queue="short", doc=doc, email_data=email_data)
