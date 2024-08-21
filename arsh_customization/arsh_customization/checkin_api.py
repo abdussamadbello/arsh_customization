@@ -27,17 +27,17 @@ def create_employee_checkin(employee, timestamp, device_id, log_type, skip_auto_
     doc.time = timestamp
     doc.device_id = device_id
     doc.log_type = log_type
+    doc.shift = "Regular"
     doc.skip_auto_attendance = "1" if skip_auto_attendance else "0"
     doc.insert()
     return doc
 
 def parse_timestamp(timestamp_str):
     """Helper function to parse and validate the timestamp."""
-    try:
-        return datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        frappe.throw(_("Invalid timestamp format. Please use 'YYYY-MM-DD HH:MM:SS'."))
-
+    parsed_time = datetime.strptime(timestamp_str, "%m/%d/%Y %H:%M")
+        # Convert the parsed time to the desired format YYYY-MM-DD HH:MM:SS
+    return parsed_time.strftime("%Y-%m-%d %H:%M:%S")    
+ 
 @frappe.whitelist()
 def add_log_based_on_employee_field():
     try:
@@ -45,8 +45,10 @@ def add_log_based_on_employee_field():
         employee_fieldname = "attendance_device_id"
 
         # Validate input parameters
-        if not params.get("employee_field_value") or not params.get("timestamp"):
-            frappe.throw(_("'employee_field_value' and 'timestamp' are required."))
+        if not params.get("employee_field_value"):
+            frappe.throw(_("'employee_field_value' is required."))
+        if not params.get("timestamp"):
+            frappe.throw(_("'timestamp' is required."))
 
         timestamp = parse_timestamp(params["timestamp"])
         employee = get_employee_by_field(employee_fieldname, params["employee_field_value"])
@@ -57,10 +59,10 @@ def add_log_based_on_employee_field():
             params.get("log_type")
         )
 
-        return doc
+        return {"status": "success", "message": f"Checkin record {doc.name} created"}
     except Exception as err:
-        frappe.log_error(frappe.get_traceback(), f'{err}')
-        frappe.throw(_("An error occurred while adding the log."))
+        frappe.log_error(frappe.get_traceback(), f"Error: {str(err)}")
+        frappe.throw(_("An error occurred while adding the log. Error: {}").format(str(err)))
 
 @frappe.whitelist()
 def bulkload_employee_checkin():
@@ -73,8 +75,10 @@ def bulkload_employee_checkin():
         for index, item in enumerate(data.get('record', []), start=1):
             try:
                 # Validate input parameters
-                if not item.get("employee_field_value") or not item.get("timestamp"):
-                    frappe.throw(_("'employee_field_value' and 'timestamp' are required."))
+                if not item.get("employee_field_value"):
+                    frappe.throw(_("'employee_field_value' is required in row {}.").format(index))
+                if not item.get("timestamp"):
+                    frappe.throw(_("'timestamp' is required in row {}.").format(index))
 
                 timestamp = parse_timestamp(item["timestamp"])
                 employee = get_employee_by_field(employee_fieldname, item["employee_field_value"])
@@ -86,13 +90,14 @@ def bulkload_employee_checkin():
                     skip_auto_attendance=int(item.get("skip_auto_attendance", 0)) == 1
                 )
 
-                checkin_records.append(f"Checkin record {doc.name} created")
+                checkin_records.append(f"Row {index}: Checkin record {doc.name} created")
             except Exception as err:
-                frappe.log_error(frappe.get_traceback(), f'{err} in file {data.get("filename")}')
-                checkin_records.append(f"Row {index} returned error: {err}")
+                frappe.log_error(frappe.get_traceback(), f'Error in row {index}: {str(err)} in file {data.get("filename")}')
+                checkin_records.append(f"Row {index}: Error - {str(err)}")
                 error_count += 1
 
-        return checkin_records, error_count
+        return {"status": "completed", "records": checkin_records, "errors": error_count}
     except Exception as err:
-        frappe.log_error(frappe.get_traceback(), f'{err}')
-        frappe.throw(_("An error occurred during bulk loading employee checkins."))
+        frappe.log_error(frappe.get_traceback(), f"Error: {str(err)}")
+        frappe.throw(_("An error occurred during bulk loading employee checkins. Error: {}").format(str(err)))
+
