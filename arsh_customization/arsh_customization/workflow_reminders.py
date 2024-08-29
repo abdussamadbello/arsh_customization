@@ -15,7 +15,7 @@ def get_action_party(doc) -> list[str]:
      if doc.workflow_state in ["Pending HOD Approval"]:
           return ([doc.expense_approver])
      elif doc.workflow_state == "Pending Cost Center Approval":
-          return ([doc.expense_approver])
+          return ([doc.cost_approver])
      else:
           role_map = {"Pending HRM Approval": "HR Manager",
                       "Pending Compliance Approval": "Compliance Approval",
@@ -28,24 +28,18 @@ def get_action_party(doc) -> list[str]:
           return get_users_with_role (role_map.get(doc.workflow_state))   
           
 def get_supervisor(action_party) -> str:
-    supervisor = []
-    for party in action_party:
-        supervisor_id = frappe.db.get_value("Employee", {"user_id":party}, "reports_to")
-        if not supervisor_id:
-            continue
-        supervisor.append(frappe.db.get_value("Employee",supervisor_id, "user_id"))
-    return supervisor
+    supervisor_id = frappe.db.get_value("Employee", {"user_id":action_party}, "reports_to")
+    if not supervisor_id:
+        return
+    return frappe.db.get_value("Employee",supervisor_id, "user_id")
 
 def send_email(doc, email_data:dict):
     user = email_data.get("action_party")
-    possible_actions =[
-		{"action_name": "Approve",	"action_link": get_workflow_action_url("Approve", doc, user),},
-		{"action_name": "Reject",	"action_link": get_workflow_action_url("Reject", doc, user),}
-	]
     common_args = get_common_email_args(doc)
     message = common_args.pop("message", None)
     if email_data.get("action") == "escalation":
          message = email_data.get("message")
+         user = get_supervisor(email_data["action_party"])
     email_args = {
         "recipients": user,
         "args": {"actions":[
