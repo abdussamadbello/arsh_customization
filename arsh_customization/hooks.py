@@ -146,13 +146,13 @@ override_doctype_class = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # "all": [
 # "arsh_customization.tasks.all"
 # ],
-# "daily": [
-# "arsh_customization.tasks.daily"
-# ],
+"daily": [
+"arsh_customization.arsh_customization.workflow_reminder"
+],
 # "hourly": [
 # "arsh_customization.tasks.hourly"
 # ],
@@ -162,7 +162,7 @@ override_doctype_class = {
 # "monthly": [
 # "arsh_customization.tasks.monthly"
 # ],
-# }
+}
 
 # Testing
 # -------
