@@ -1,4 +1,0 @@
-[pre_model_sync]
-arsh_customization.arsh_customization.patches.change_username_domain
-
-[post_model_sync]
