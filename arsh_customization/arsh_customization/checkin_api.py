@@ -34,9 +34,9 @@ def create_employee_checkin(employee, timestamp, device_id, log_type, skip_auto_
 
 def parse_timestamp(timestamp_str):
     """Helper function to parse and validate the timestamp."""
-    parsed_time = datetime.strptime(timestamp_str, "%m/%d/%Y %H:%M")
-        # Convert the parsed time to the desired format YYYY-MM-DD HH:MM:SS
-    return parsed_time.strftime("%Y-%m-%d %H:%M:%S")    
+    parsed_time = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+    return parsed_time.strftime("%Y-%m-%d %H:%M:%S")
+
  
 @frappe.whitelist()
 def add_log_based_on_employee_field():
