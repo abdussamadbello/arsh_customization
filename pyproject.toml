@@ -1,0 +1,21 @@
+[project]
+name = "arsh_customization"
+description = "Ariosh Customization"
+requires-python = ">=3.7"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Optisol", email = "optisol.ltd@gmail.com"}
+]
+dynamic = ["version"]
+dependencies = [
+    # "frappe>=14.0",
+]
+
+[build-system]
+requires = ["setuptools >=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# Developer dependencies (optional)
+[tool.bench.dev-dependencies]
+# Add any dev dependencies, e.g., "pytest~=6.2.5"
