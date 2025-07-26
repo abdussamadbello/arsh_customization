@@ -65,7 +65,7 @@ class ArioshAttendanceRequest(AttendanceRequest):
                     attendance_warnings.append(
                         {"date": attendance_date, "reason": "On Leave", "action": "Skip"})
             else:
-                attendance = self.get_attendance_record(attendance_date)
+                attendance = self.get_attendance_doc(attendance_date)
                 if attendance:
                     attendance_warnings.append(
                         {
@@ -79,7 +79,7 @@ class ArioshAttendanceRequest(AttendanceRequest):
         return attendance_warnings
 
     def create_or_update_attendance(self, date: str):
-        attendance_name = self.get_attendance_record(date)
+        attendance_name = self.get_attendance_doc(date)
         status = self.get_attendance_status(date)
         field_days = self.get_field_days()
 
